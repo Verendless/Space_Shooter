@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private float _speed = 5.0f;
+    [SerializeField] private int _playerLife = 3;
     [SerializeField] private GameObject _leserPrefab;
     private float _fireRate = 0.15f;
     private float _nextFire = 0.0f;
@@ -23,7 +24,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         CalculatePlayerMovement();
-        
+
         if(Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFire)
         {
             FireLeser();
@@ -54,5 +55,15 @@ public class Player : MonoBehaviour
     {
             _nextFire = Time.time + _fireRate;
             Instantiate(_leserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
+    }
+
+    public void Demage()
+    {
+        _playerLife --;
+
+        if(_playerLife == 0) 
+        {
+            Destroy(this.gameObject);
+        }
     }
 }
