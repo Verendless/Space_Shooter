@@ -5,23 +5,30 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private float _speed = 5.0f;
-    [SerializeField] 
-    private GameObject _leserPrefab;
+    [SerializeField] private GameObject _leserPrefab;
+    private float _fireRate = 0.15f;
+    private float _nextFire = 0.0f;
     // Start is called before the first frame update
     void Start()
     {
         transform.position = new Vector2(0, 0);
+
+        if(_leserPrefab == null)
+        {
+            Debug.Log ("Leser is Null");
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         CalculatePlayerMovement();
-
-        if(Input.GetKeyDown(KeyCode.Space))
+        
+        if(Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFire)
         {
-            Instantiate(_leserPrefab, transform.position, Quaternion.identity);
+            FireLeser();
         }
+        
     }
 
     void CalculatePlayerMovement()
@@ -41,5 +48,11 @@ public class Player : MonoBehaviour
         {
             transform.position = new Vector2(-11.0f, transform.position.y);
         }
+    }
+
+    void FireLeser()
+    {
+            _nextFire = Time.time + _fireRate;
+            Instantiate(_leserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
     }
 }

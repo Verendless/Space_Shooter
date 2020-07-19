@@ -13,7 +13,7 @@ public class Leser : MonoBehaviour
 
     void LeserBehaviour()
     {
-        transform.Translate(Vector2.up * _speed * Time.deltaTime);
+        transform.Translate((Vector2.up) * _speed * Time.deltaTime);
 
         if(transform.position.y >= 7.9f)
         {
