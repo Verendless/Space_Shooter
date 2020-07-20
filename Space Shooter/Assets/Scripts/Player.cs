@@ -58,7 +58,8 @@ public class Player : MonoBehaviour
     void FireLeser()
     {
             _nextFire = Time.time + _fireRate;
-            Instantiate(_leserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
+            Vector3 offset = new Vector3(0, 1f, 0);
+            Instantiate(_leserPrefab, transform.position + offset, Quaternion.identity);
     }
 
     public void Demage()
