@@ -6,17 +6,21 @@ public class Player : MonoBehaviour
 {
     private float _speed = 5.0f;
     [SerializeField] private int _playerLife = 3;
+    private bool _playerDeath = false;
     [SerializeField] private GameObject _leserPrefab;
     private float _fireRate = 0.15f;
     private float _nextFire = 0.0f;
+    private SpawnManager _spawnManager;
     // Start is called before the first frame update
     void Start()
     {
+        
         transform.position = new Vector2(0, 0);
+        _spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
 
-        if(_leserPrefab == null)
+        if(_spawnManager == null)
         {
-            Debug.Log ("Leser is Null");
+            Debug.LogError("Spawn Manager is Null");
         }
     }
 
@@ -61,9 +65,11 @@ public class Player : MonoBehaviour
     {
         _playerLife --;
 
-        if(_playerLife == 0) 
+        if(_playerLife == 0)
         {
+            _spawnManager.onPlayerDeath();
             Destroy(this.gameObject);
         }
+        
     }
 }
