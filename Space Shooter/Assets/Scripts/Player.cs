@@ -5,9 +5,14 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private float _speed = 5.0f;
-    [SerializeField] private int _playerLife = 3;
+    [SerializeField] 
+    private int _playerLife = 3;
     private bool _playerDeath = false;
-    [SerializeField] private GameObject _leserPrefab;
+    [SerializeField] 
+    private GameObject _leserPrefab;
+    [SerializeField]
+    private GameObject _tripleShotPrefab;
+    private bool _tripleShotActive = false;
     private float _fireRate = 0.15f;
     private float _nextFire = 0.0f;
     private SpawnManager _spawnManager;
@@ -57,9 +62,16 @@ public class Player : MonoBehaviour
 
     void FireLeser()
     {
-            _nextFire = Time.time + _fireRate;
-            Vector3 offset = new Vector3(0, 1f, 0);
-            Instantiate(_leserPrefab, transform.position + offset, Quaternion.identity);
+        _nextFire = Time.time + _fireRate;
+        if(_tripleShotActive == false)
+        {
+            Instantiate(_leserPrefab, transform.position + new Vector3(0, 1f, 0), Quaternion.identity);
+        } 
+        else
+        {
+            Instantiate(_tripleShotPrefab, transform.position + new Vector3(0, -0.88f, 0), Quaternion.identity);
+        }
+                       
     }
 
     public void Demage()
@@ -72,5 +84,10 @@ public class Player : MonoBehaviour
             Destroy(this.gameObject);
         }
         
+    }
+
+    public void TripleShotIsActive()
+    {
+        _tripleShotActive = true;
     }
 }

@@ -4,22 +4,21 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField] private GameObject _enemyPrefab;
-    [SerializeField] private GameObject _enemyContainer;
+    [SerializeField] 
+    private GameObject _enemyPrefab;
+    [SerializeField]
+    private GameObject _tripleShotPrefab;
+    [SerializeField] 
+    private GameObject _enemyContainer;
     private bool _spawn = true;
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(SpawnRoutine());
+        StartCoroutine(EnemySpawnRoutine());
+        StartCoroutine(PowerUpSpawnRoutine());
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    IEnumerator SpawnRoutine()
+    
+    IEnumerator EnemySpawnRoutine()
     {
         while(_spawn == true)
         {
@@ -30,8 +29,22 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    public void onPlayerDeath()
+    IEnumerator PowerUpSpawnRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+        Debug.Log("Test");
+        while(_spawn == true)
+        {
+            Vector2 powerUpSpawnLocation = new Vector2(Random.Range(-9.4f, 9.4f), 7.9f);
+            Instantiate(_tripleShotPrefab, powerUpSpawnLocation, Quaternion.identity);
+            yield return new WaitForSeconds(10.0f);
+
+        }
+    }
+
+        public void onPlayerDeath()
     {
         _spawn = false;
     }
+
 }
