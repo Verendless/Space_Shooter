@@ -5,6 +5,12 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     private float _speed = 4.0f;
+    private Player player;
+
+    void Start()
+    {
+        player = GameObject.Find("Player").GetComponent<Player>();
+    }
 
     // Update is called once per frame
     void Update()
@@ -20,9 +26,9 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        
         if(other.tag == "Player")
-        {
-            Player player = other.GetComponent<Player>();
+        { 
             if(other != null)
             {
                player.Demage();
@@ -33,6 +39,7 @@ public class Enemy : MonoBehaviour
         if(other.tag == "Leser")
         {
             Destroy(other.gameObject);
+            player.AddScore();
             Destroy(this.gameObject);
         }
     }

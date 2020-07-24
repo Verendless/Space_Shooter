@@ -11,6 +11,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] 
     private GameObject _enemyContainer;
     private bool _spawn = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,6 +21,7 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator EnemySpawnRoutine()
     {
+        yield return new WaitForSeconds(2.0f);
         while(_spawn == true)
         {
             Vector2 enemySpawnLocation = new Vector2(Random.Range(-9.4f, 9.4f), 7.9f);
@@ -31,7 +33,7 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator PowerUpSpawnRoutine()
     {
-        yield return new WaitForSeconds(5.0f);
+        yield return new WaitForSeconds(10.0f);
         while(_spawn == true)
         {
             Vector2 powerUpSpawnLocation = new Vector2(Random.Range(-9.4f, 9.4f), 7.9f);

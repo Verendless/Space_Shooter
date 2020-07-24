@@ -4,19 +4,25 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField]
     private float _speed = 5.0f;
     private float _speedBoost = 2.0f;
     [SerializeField] 
     private int _playerLife = 3;
+    [SerializeField]
+    private int _score;
+
     [SerializeField] 
     private GameObject _leserPrefab;
     [SerializeField]
     private GameObject _tripleShotPrefab;
+
     private bool _tripleShotActive = false;
     private bool _shieldActive = false;
+    private bool _speedBoostActive = false;
+
     private float _fireRate = 0.15f;
     private float _nextFire = 0.0f;
+
     private SpawnManager _spawnManager;
     
     // Start is called before the first frame update
@@ -49,7 +55,16 @@ public class Player : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
         Vector2 direction = new Vector2(horizontalInput, verticalInput);
-        transform.Translate(direction * _speed * Time.deltaTime);
+
+        if(_speedBoostActive == false)
+        {
+            transform.Translate(direction * _speed * Time.deltaTime);
+        }
+        else
+        {
+            transform.Translate(direction * (_speed * _speedBoost) * Time.deltaTime);
+        }
+        
         
         transform.position = new Vector2(transform.position.x, Mathf.Clamp(transform.position.y, -3.0f, 0));
 
@@ -77,6 +92,16 @@ public class Player : MonoBehaviour
                        
     }
 
+    public void AddScore()
+    {
+        _score += 10;
+    }
+
+    public int ShowScore()
+    {
+        return _score;
+    }
+
     public void Demage()
     {
         if(_shieldActive == false)
@@ -97,6 +122,11 @@ public class Player : MonoBehaviour
         
     }
 
+    public int ShowPlayerLife()
+    {
+        return _playerLife;
+    }
+
     public void TripleShotIsActive()
     {
         _tripleShotActive = true;
@@ -105,7 +135,7 @@ public class Player : MonoBehaviour
 
     public void SpeedPowerUpActive()
     {
-        _speed *= _speedBoost;
+        _speedBoostActive = true;
         StartCoroutine(SpeedPowerUpDownRoutine());
 
     }
@@ -126,7 +156,7 @@ public class Player : MonoBehaviour
     IEnumerator SpeedPowerUpDownRoutine()
     {
         yield return new WaitForSeconds(5.0f);
-        _speed /= _speedBoost;
+        _speedBoostActive = false;
     }
 
     IEnumerator ShieldPowerUpDownRoutine()
