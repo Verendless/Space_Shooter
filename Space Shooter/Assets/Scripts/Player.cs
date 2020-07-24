@@ -4,18 +4,21 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [SerializeField]
     private float _speed = 5.0f;
+    private float _speedBoost = 2.0f;
     [SerializeField] 
     private int _playerLife = 3;
-    private bool _playerDeath = false;
     [SerializeField] 
     private GameObject _leserPrefab;
     [SerializeField]
     private GameObject _tripleShotPrefab;
     private bool _tripleShotActive = false;
+    private bool _shieldActive = false;
     private float _fireRate = 0.15f;
     private float _nextFire = 0.0f;
     private SpawnManager _spawnManager;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -76,7 +79,15 @@ public class Player : MonoBehaviour
 
     public void Demage()
     {
-        _playerLife --;
+        if(_shieldActive == false)
+        {
+            _playerLife --;
+        }
+        else 
+        {
+            transform.Find("Shield").gameObject.SetActive(false);
+        }
+        
 
         if(_playerLife == 0)
         {
@@ -89,5 +100,44 @@ public class Player : MonoBehaviour
     public void TripleShotIsActive()
     {
         _tripleShotActive = true;
+        StartCoroutine(TripleShotIsDownRoutine());
     }
+
+    public void SpeedPowerUpActive()
+    {
+        _speed *= _speedBoost;
+        StartCoroutine(SpeedPowerUpDownRoutine());
+
+    }
+
+    public void ShieldPowerUpActive()
+    {
+        transform.Find("Shield").gameObject.SetActive(true);
+        _shieldActive = true;
+        StartCoroutine(ShieldPowerUpDownRoutine());
+    }
+
+    IEnumerator TripleShotIsDownRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+        _tripleShotActive = false;
+    }
+
+    IEnumerator SpeedPowerUpDownRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+        _speed /= _speedBoost;
+    }
+
+    IEnumerator ShieldPowerUpDownRoutine()
+    {
+        if(_shieldActive == true)
+        {
+        yield return new WaitForSeconds(5.0f);
+        transform.Find("Shield").gameObject.SetActive(false);
+        _shieldActive = false;
+        }
+    }
+
+
 }

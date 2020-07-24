@@ -17,7 +17,12 @@ public class Leser : MonoBehaviour
 
         if(transform.position.y >= 7.9f)
         {
+            if(transform.parent != null)
+            {
+                Destroy(transform.parent.gameObject);
+            }
             Destroy(this.gameObject);
+            
         }
     }
 }
