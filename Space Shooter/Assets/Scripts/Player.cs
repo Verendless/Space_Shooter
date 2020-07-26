@@ -15,6 +15,8 @@ public class Player : MonoBehaviour
     private GameObject _leserPrefab;
     [SerializeField]
     private GameObject _tripleShotPrefab;
+    [SerializeField]
+    private GameObject _shield;
 
     private bool _tripleShotActive = false;
     private bool _shieldActive = false;
@@ -24,6 +26,7 @@ public class Player : MonoBehaviour
     private float _nextFire = 0.0f;
 
     private SpawnManager _spawnManager;
+    private UIManager _uiManager;
     
     // Start is called before the first frame update
     void Start()
@@ -31,10 +34,16 @@ public class Player : MonoBehaviour
         
         transform.position = new Vector2(0, 0);
         _spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
 
         if(_spawnManager == null)
         {
             Debug.LogError("Spawn Manager is Null");
+        }
+
+        if(_uiManager == null)
+        {
+            Debug.LogError("UI Manager is Null");
         }
     }
 
@@ -46,10 +55,9 @@ public class Player : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFire)
         {
             FireLeser();
-        }
-        
+        }    
     }
-
+ 
     void CalculatePlayerMovement()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
@@ -95,26 +103,22 @@ public class Player : MonoBehaviour
     public void AddScore()
     {
         _score += 10;
-    }
-
-    public int ShowScore()
-    {
-        return _score;
+        _uiManager.UpdateScore(_score);
     }
 
     public void Demage()
     {
-        if(_shieldActive == false)
+        if(_shieldActive == true)
         {
-            _playerLife --;
-        }
-        else 
-        {
-            transform.Find("Shield").gameObject.SetActive(false);
+            _shield.SetActive(false);
+            _shieldActive = false;
+            return;
         }
         
+        _playerLife --;
+        _uiManager.UpdatePlayerLifeUI(_playerLife);
 
-        if(_playerLife == 0)
+        if(_playerLife <= 0)
         {
             _spawnManager.onPlayerDeath();
             Destroy(this.gameObject);
@@ -142,7 +146,7 @@ public class Player : MonoBehaviour
 
     public void ShieldPowerUpActive()
     {
-        transform.Find("Shield").gameObject.SetActive(true);
+        _shield.SetActive(true);
         _shieldActive = true;
         StartCoroutine(ShieldPowerUpDownRoutine());
     }
@@ -161,12 +165,9 @@ public class Player : MonoBehaviour
 
     IEnumerator ShieldPowerUpDownRoutine()
     {
-        if(_shieldActive == true)
-        {
         yield return new WaitForSeconds(5.0f);
-        transform.Find("Shield").gameObject.SetActive(false);
+        _shield.SetActive(false);
         _shieldActive = false;
-        }
     }
 
 
