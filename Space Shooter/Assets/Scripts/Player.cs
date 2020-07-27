@@ -17,14 +17,18 @@ public class Player : MonoBehaviour
     private GameObject _tripleShotPrefab;
     [SerializeField]
     private GameObject _shield;
-
+    [SerializeField]
+    private GameObject _explosionAnimPrefab;
+    [SerializeField]
+    private GameObject _playerThruster;
+    [SerializeField]
+    private GameObject[] _playerHurtAnim;
     private bool _tripleShotActive = false;
     private bool _shieldActive = false;
     private bool _speedBoostActive = false;
 
     private float _fireRate = 0.15f;
     private float _nextFire = 0.0f;
-
     private SpawnManager _spawnManager;
     private UIManager _uiManager;
     
@@ -35,7 +39,7 @@ public class Player : MonoBehaviour
         transform.position = new Vector2(0, 0);
         _spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
-
+    
         if(_spawnManager == null)
         {
             Debug.LogError("Spawn Manager is Null");
@@ -118,9 +122,25 @@ public class Player : MonoBehaviour
         _playerLife --;
         _uiManager.UpdatePlayerLifeUI(_playerLife);
 
+        if(_playerLife < 3 && _playerLife > 0)
+        {
+            int check = Random.Range(0, 2);
+            Debug.Log(check);
+            _playerHurtAnim[check].SetActive(true);
+            if(_playerHurtAnim[0].gameObject.activeInHierarchy == true && _playerLife < 2)
+            {
+                _playerHurtAnim[1].SetActive(true);
+            }
+            if (_playerHurtAnim[1].gameObject.activeInHierarchy == true && _playerLife < 2)
+            {
+                _playerHurtAnim[0].SetActive(true);
+            }
+        }
+
         if(_playerLife <= 0)
         {
             _spawnManager.onPlayerDeath();
+            Instantiate(_explosionAnimPrefab, transform.position, Quaternion.identity);
             Destroy(this.gameObject);
         }
         
@@ -140,6 +160,7 @@ public class Player : MonoBehaviour
     public void SpeedPowerUpActive()
     {
         _speedBoostActive = true;
+        _playerThruster.transform.localScale  += new Vector3(.5f,0,0);
         StartCoroutine(SpeedPowerUpDownRoutine());
 
     }
@@ -161,6 +182,7 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(5.0f);
         _speedBoostActive = false;
+        _playerThruster.transform.localScale  -= new Vector3(.5f,0,0);
     }
 
     IEnumerator ShieldPowerUpDownRoutine()

@@ -5,11 +5,13 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     private float _speed = 4.0f;
-    private Player player;
+    private Player _player;
+    private Animator _enemyDestroyedAnim;
 
     void Start()
     {
-        player = GameObject.Find("Player").GetComponent<Player>();
+        _player = GameObject.Find("Player").GetComponent<Player>();
+        _enemyDestroyedAnim = gameObject.GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -31,16 +33,26 @@ public class Enemy : MonoBehaviour
         { 
             if(other != null)
             {
-               player.Demage();
+               _player.Demage();
             }          
-            Destroy(this.gameObject);
+            StartCoroutine(OnEnemyDeath());
         }
 
         if(other.tag == "Leser")
         {
             Destroy(other.gameObject);
-            player.AddScore();
-            Destroy(this.gameObject);
+            _player.AddScore();
+            StartCoroutine(OnEnemyDeath());
         }
+    }
+
+    IEnumerator OnEnemyDeath()
+    {
+        _enemyDestroyedAnim.SetTrigger("EnemyDestroyTrigger");
+        Destroy(GetComponent<PolygonCollider2D>());
+        yield return new WaitForSeconds(1.0f);
+        Destroy(this.gameObject);
+        
+
     }
 }
