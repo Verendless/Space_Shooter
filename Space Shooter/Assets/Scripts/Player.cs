@@ -17,8 +17,7 @@ public class Player : MonoBehaviour
     private GameObject _tripleShotPrefab;
     [SerializeField]
     private GameObject _shield;
-    [SerializeField]
-    private GameObject _explosionAnimPrefab;
+    [SerializeField]    private GameObject _explosionPrefab;
     [SerializeField]
     private GameObject _playerThruster;
     [SerializeField]
@@ -124,26 +123,29 @@ public class Player : MonoBehaviour
 
         if(_playerLife < 3 && _playerLife > 0)
         {
-            int check = Random.Range(0, 2);
-            Debug.Log(check);
-            _playerHurtAnim[check].SetActive(true);
-            if(_playerHurtAnim[0].gameObject.activeInHierarchy == true && _playerLife < 2)
-            {
-                _playerHurtAnim[1].SetActive(true);
-            }
-            if (_playerHurtAnim[1].gameObject.activeInHierarchy == true && _playerLife < 2)
-            {
-                _playerHurtAnim[0].SetActive(true);
-            }
+            WhenPlayerGetDamage();
         }
 
         if(_playerLife <= 0)
         {
             _spawnManager.onPlayerDeath();
-            Instantiate(_explosionAnimPrefab, transform.position, Quaternion.identity);
+            Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             Destroy(this.gameObject);
         }
         
+    }
+
+    public void WhenPlayerGetDamage()
+    {
+        _playerHurtAnim[Random.Range(0, 2)].SetActive(true);
+        if(_playerHurtAnim[0].gameObject.activeInHierarchy == true && _playerLife < 2)
+        {
+            _playerHurtAnim[1].SetActive(true);
+        }
+        if (_playerHurtAnim[1].gameObject.activeInHierarchy == true && _playerLife < 2)
+        {
+            _playerHurtAnim[0].SetActive(true);
+        }
     }
 
     public int ShowPlayerLife()

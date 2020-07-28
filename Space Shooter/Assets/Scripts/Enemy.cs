@@ -11,7 +11,16 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         _player = GameObject.Find("Player").GetComponent<Player>();
+        if(_player == null)
+        {
+            Debug.LogError("Player is Null");
+        }
+
         _enemyDestroyedAnim = gameObject.GetComponent<Animator>();
+        if(_enemyDestroyedAnim == null)
+        {
+            Debug.LogError("Player is Null");
+        }
     }
 
     // Update is called once per frame
@@ -35,23 +44,25 @@ public class Enemy : MonoBehaviour
             {
                _player.Demage();
             }          
-            StartCoroutine(OnEnemyDeath());
+            OnEnemyDeath();
         }
 
         if(other.tag == "Leser")
         {
             Destroy(other.gameObject);
-            _player.AddScore();
-            StartCoroutine(OnEnemyDeath());
+            if(_player != null)
+            {
+                _player.AddScore();
+            }
+            OnEnemyDeath();
         }
     }
 
-    IEnumerator OnEnemyDeath()
+    void OnEnemyDeath()
     {
         _enemyDestroyedAnim.SetTrigger("EnemyDestroyTrigger");
         Destroy(GetComponent<PolygonCollider2D>());
-        yield return new WaitForSeconds(1.0f);
-        Destroy(this.gameObject);
+        Destroy(this.gameObject, 1.0f);
         
 
     }

@@ -12,8 +12,7 @@ public class SpawnManager : MonoBehaviour
     private GameObject _enemyContainer;
     private bool _spawn = true;
 
-    // Start is called before the first frame update
-    void Start()
+    public void StartSpawning()
     {
         StartCoroutine(EnemySpawnRoutine());
         StartCoroutine(PowerUpSpawnRoutine());
@@ -21,6 +20,7 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator EnemySpawnRoutine()
     {
+        
         yield return new WaitForSeconds(2.0f);
         while(_spawn == true)
         {
@@ -42,7 +42,7 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-        public void onPlayerDeath()
+    public void onPlayerDeath()
     {
         _spawn = false;
     }
