@@ -10,14 +10,14 @@ public class Player : MonoBehaviour
     private int _playerLife = 3;
     [SerializeField]
     private int _score;
-
     [SerializeField] 
     private GameObject _leserPrefab;
     [SerializeField]
     private GameObject _tripleShotPrefab;
     [SerializeField]
     private GameObject _shield;
-    [SerializeField]    private GameObject _explosionPrefab;
+    [SerializeField]    
+    private GameObject _explosionPrefab;
     [SerializeField]
     private GameObject _playerThruster;
     [SerializeField]
@@ -25,11 +25,11 @@ public class Player : MonoBehaviour
     private bool _tripleShotActive = false;
     private bool _shieldActive = false;
     private bool _speedBoostActive = false;
-
     private float _fireRate = 0.15f;
     private float _nextFire = 0.0f;
     private SpawnManager _spawnManager;
     private UIManager _uiManager;
+    private AudioSource _audioSource;
     
     // Start is called before the first frame update
     void Start()
@@ -38,6 +38,7 @@ public class Player : MonoBehaviour
         transform.position = new Vector2(0, 0);
         _spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        _audioSource = GetComponent<AudioSource>();
     
         if(_spawnManager == null)
         {
@@ -47,6 +48,11 @@ public class Player : MonoBehaviour
         if(_uiManager == null)
         {
             Debug.LogError("UI Manager is Null");
+        }
+        
+        if(_audioSource == null)
+        {
+            Debug.LogError("Audio Source on the Player is Null");
         }
     }
 
@@ -100,7 +106,7 @@ public class Player : MonoBehaviour
         {
             Instantiate(_tripleShotPrefab, transform.position + new Vector3(0, -0.88f, 0), Quaternion.identity);
         }
-                       
+        _audioSource.Play();                  
     }
 
     public void AddScore()
@@ -193,6 +199,4 @@ public class Player : MonoBehaviour
         _shield.SetActive(false);
         _shieldActive = false;
     }
-
-
-}
+    }

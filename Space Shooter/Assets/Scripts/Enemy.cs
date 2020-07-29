@@ -7,6 +7,7 @@ public class Enemy : MonoBehaviour
     private float _speed = 4.0f;
     private Player _player;
     private Animator _enemyDestroyedAnim;
+    private AudioSource _enemyExplosionSoundSource;
 
     void Start()
     {
@@ -20,6 +21,12 @@ public class Enemy : MonoBehaviour
         if(_enemyDestroyedAnim == null)
         {
             Debug.LogError("Player is Null");
+        }
+
+        _enemyExplosionSoundSource = GetComponent<AudioSource>();
+        if(_enemyExplosionSoundSource == null)
+        {
+            Debug.LogError("Explosion Sound on the Enemy is Null");
         }
     }
 
@@ -61,8 +68,9 @@ public class Enemy : MonoBehaviour
     void OnEnemyDeath()
     {
         _enemyDestroyedAnim.SetTrigger("EnemyDestroyTrigger");
+        _enemyExplosionSoundSource.Play();
         Destroy(GetComponent<PolygonCollider2D>());
-        Destroy(this.gameObject, 1.0f);
+        Destroy(this.gameObject, 3.0f);
         
 
     }
