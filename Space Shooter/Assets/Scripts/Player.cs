@@ -25,11 +25,13 @@ public class Player : MonoBehaviour
     private bool _tripleShotActive = false;
     private bool _shieldActive = false;
     private bool _speedBoostActive = false;
+    private bool _isPlayerInvicibleActive;
     private float _fireRate = 0.15f;
     private float _nextFire = 0.0f;
     private SpawnManager _spawnManager;
     private UIManager _uiManager;
     private AudioSource _audioSource;
+    private Animator _animator;
     
     // Start is called before the first frame update
     void Start()
@@ -38,6 +40,7 @@ public class Player : MonoBehaviour
         transform.position = new Vector2(0, 0);
         _spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        _animator = GetComponent<Animator>(); 
         _audioSource = GetComponent<AudioSource>();
     
         if(_spawnManager == null)
@@ -54,17 +57,25 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("Audio Source on the Player is Null");
         }
+
+        if(_animator == null)
+        {
+            Debug.LogError("Animtor on the Player is Null");
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         CalculatePlayerMovement();
+        MovementAnimation();
 
         if(Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFire)
         {
             FireLeser();
-        }    
+        }
+
+  
     }
  
     void CalculatePlayerMovement()
@@ -95,16 +106,44 @@ public class Player : MonoBehaviour
         }
     }
 
+    void MovementAnimation()
+    {
+        // for to add later (Player Movement Animtions)
+        if(Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            _animator.SetBool("PlayerTurnRightBool", true);
+            _animator.SetBool("PlayerTurnLeftBool", false);
+        }
+
+        else if(Input.GetKeyUp(KeyCode.D) == true || Input.GetKeyUp(KeyCode.RightArrow))
+        {
+            _animator.SetBool("PlayerTurnRightBool", false);
+            _animator.SetBool("PlayerTurnLeftBool", false);
+        }
+        
+        if(Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            _animator.SetBool("PlayerTurnRightBool", false);
+            _animator.SetBool("PlayerTurnLeftBool", true);
+        }
+
+        else if(Input.GetKeyUp(KeyCode.A) == true || Input.GetKeyUp(KeyCode.LeftArrow))
+        {
+            _animator.SetBool("PlayerTurnRightBool", false);
+            _animator.SetBool("PlayerTurnLeftBool", false);
+        }  
+    }
+
     void FireLeser()
     {
         _nextFire = Time.time + _fireRate;
         if(_tripleShotActive == false)
         {
-            Instantiate(_leserPrefab, transform.position + new Vector3(0, 1f, 0), Quaternion.identity);
+            Instantiate(_leserPrefab, transform.position + new Vector3(0, 1.33f, 0), Quaternion.identity);
         } 
         else
         {
-            Instantiate(_tripleShotPrefab, transform.position + new Vector3(0, -0.88f, 0), Quaternion.identity);
+            Instantiate(_tripleShotPrefab, transform.position + new Vector3(0, -0.5f, 0), Quaternion.identity);
         }
         _audioSource.Play();                  
     }
@@ -117,15 +156,11 @@ public class Player : MonoBehaviour
 
     public void Demage()
     {
-        if(_shieldActive == true)
+        if(_playerLife != 0)
         {
-            _shield.SetActive(false);
-            _shieldActive = false;
-            return;
+            _playerLife -= 1;
+            _uiManager.UpdatePlayerLifeUI(_playerLife);
         }
-        
-        _playerLife --;
-        _uiManager.UpdatePlayerLifeUI(_playerLife);
 
         if(_playerLife < 3 && _playerLife > 0)
         {
@@ -152,11 +187,6 @@ public class Player : MonoBehaviour
         {
             _playerHurtAnim[0].SetActive(true);
         }
-    }
-
-    public int ShowPlayerLife()
-    {
-        return _playerLife;
     }
 
     public void TripleShotIsActive()
@@ -199,4 +229,38 @@ public class Player : MonoBehaviour
         _shield.SetActive(false);
         _shieldActive = false;
     }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.tag == "EnemyLeser" || other.tag == "Enemy")
+        {
+            Destroy(other.gameObject);
+            if(_shieldActive == false && _isPlayerInvicibleActive == false)
+            {
+                Demage();   
+                StartCoroutine(PlayerInvincibleRoutine());
+            }
+            else
+            {
+                _shield.SetActive(false);
+                _shieldActive = false;
+            }
+                
+        }
     }
+
+    IEnumerator PlayerInvincibleRoutine()
+    {
+        if(_playerLife > 0)
+        {
+            _animator.SetTrigger("IsPlayerGetHit");
+            _animator.ResetTrigger("PlayerInvicibleDown");
+            _isPlayerInvicibleActive = true;
+            yield return new WaitForSeconds(2.0f);
+            _isPlayerInvicibleActive = false;
+            _animator.SetTrigger("PlayerInvicibleDown");
+            _animator.ResetTrigger("IsPlayerGetHit");
+        }
+
+    }
+}
